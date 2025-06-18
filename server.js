@@ -1,49 +1,43 @@
-// backend/server.js
+// backend/server.js (VERSI FINAL DENGAN CORS)
 
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
+const cors = require('cors'); // Pastikan cors diimpor
 const shipRoutes = require('./routes/ships');
-const ratingRoutes = require('./routes/ratings'); 
+const ratingRoutes = require('./routes/ratings');
 
-// Inisialisasi Express App
 const app = express();
 
-// Middleware
-app.use(cors());
+// --- BAGIAN PENTING: KONFIGURASI CORS ---
+const corsOptions = {
+  // Ganti dengan URL Vercel Anda yang sebenarnya!
+  // Pastikan tidak ada slash '/' di akhir.
+  origin: 'https://proyek-pelabuhan-frontend.vercel.app', // GANTI DENGAN URL VERCEL ANDA
+  optionsSuccessStatus: 200 
+};
+app.use(cors(corsOptions));
+// --- AKHIR BAGIAN CORS ---
+
 app.use(express.json());
 
-// Menggunakan Rute API untuk Kapal
-// Semua request ke /api/ships akan ditangani oleh shipRoutes
+// Menggunakan Rute API
 app.use('/api/ships', shipRoutes);
 app.use('/api/ratings', ratingRoutes);
-// --- BAGIAN KONEKSI DATABASE DAN SERVER ---
 
 const PORT = process.env.PORT || 5001;
 
-// Membuat fungsi utama untuk menjalankan server
 const startServer = async () => {
   try {
-    // 1. Coba hubungkan ke MongoDB
-    // Gunakan string koneksi dari file .env Anda
     await mongoose.connect(process.env.MONGO_URI);
-
-    // 2. Jika berhasil, tampilkan pesan sukses
     console.log('✅ Berhasil terhubung ke MongoDB Atlas!');
-
-    // 3. BARU JALANKAN SERVER setelah database terhubung
     app.listen(PORT, () => {
       console.log(`🚀 Server berjalan di port: ${PORT}`);
     });
-
   } catch (error) {
-    // Jika gagal terhubung, tampilkan pesan error
     console.error('❌ Gagal terhubung ke database:', error.message);
-    // Hentikan proses aplikasi jika database tidak bisa terhubung
     process.exit(1);
   }
 };
 
-// Panggil fungsi untuk memulai semuanya
 startServer();
