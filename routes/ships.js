@@ -64,7 +64,29 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    // Cari dan hapus kapal berdasarkan ID
+    const deletedShip = await Ship.findByIdAndDelete(id);
+
+    if (!deletedShip) {
+      return res.status(404).json({ error: 'Kapal tidak ditemukan untuk dihapus.' });
+    }
+
+    // Opsional: Hapus juga semua rating yang terkait dengan kapal ini
+    await Rating.deleteMany({ shipId: id });
+
+    res.status(200).json({ message: 'Kapal dan semua rating terkait berhasil dihapus.', deletedShip });
+
+  } catch (error) {
+    if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'ID Kapal tidak valid.' });
+    }
+    res.status(500).json({ error: error.message });
+  }
+});
 // --- ROUTE 4: MENGHAPUS SEMUA KAPAL (YANG HILANG) ---
 // Method: DELETE
 // Endpoint: /api/ships/
