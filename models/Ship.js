@@ -1,16 +1,30 @@
-// backend/models/Ship.js
+// backend/models/Ship.js (VERSI BARU DENGAN DATA TABEL)
+
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+// Skema untuk satu baris data di dalam tabel
+const PortActivitySchema = new Schema({
+  no: { type: Number, required: true },
+  namaKapal: { type: String, required: true },
+  gtLoa: { type: String, required: true }, // GT / LOA
+  agen: { type: String, required: true },
+  labuh: { type: String, required: true },
+  rencanaSandar: { type: String, required: true },
+  komoditi: { type: String, required: true },
+  bongkarMuat: { type: String, required: true }, // Bongkar / Muat
+  asalTujuan: { type: String, required: true }, // Asal - Tujuan
+}, { _id: false }); // _id: false agar tidak dibuatkan ID untuk setiap baris
+
 const shipSchema = new Schema({
   name: {
     type: String,
-    required: true, // Nama kapal wajib diisi
+    required: true,
   },
   photo: {
     type: String,
-    required: false, // Foto tidak wajib
+    required: false,
   },
   description: {
     type: String,
@@ -28,6 +42,9 @@ const shipSchema = new Schema({
     type: String,
     required: false,
   },
-}, { timestamps: true }); // timestamps akan otomatis membuat field createdAt dan updatedAt
+  // --- FIELD BARU UNTUK TABEL ---
+  portActivities: [PortActivitySchema]
+  // -----------------------------
+}, { timestamps: true });
 
 module.exports = mongoose.model('Ship', shipSchema);
