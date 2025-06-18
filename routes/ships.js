@@ -1,68 +1,40 @@
-// backend/routes/ships.js
+// backend/routes/ships.js (VERSI FINAL LENGKAP)
 
 const express = require('express');
 const Ship = require('../models/Ship');
-const Rating = require('../models/Rating'); // <-- Pastikan model Rating diimpor
+const Rating = require('../models/Rating');
 
 const router = express.Router();
 
-// === ROUTE 1: GET SEMUA KAPAL (DENGAN RATA-RATA RATING) ===
-// Method: GET
-// Endpoint: /api/ships/
+// ROUTE 1: GET SEMUA KAPAL (DENGAN RATA-RATA RATING)
 router.get('/', async (req, res) => {
   try {
     const shipsWithAvgRating = await Ship.aggregate([
-      {
-        $lookup: {
-          from: 'ratings',
-          localField: '_id',
-          foreignField: 'shipId',
-          as: 'ratings'
-        }
-      },
-      {
-        $addFields: {
-          avgRating: {
-            $ifNull: [{ $avg: '$ratings.rating' }, 0]
-          }
-        }
-      },
-      {
-        $project: {
-          ratings: 0
-        }
-      }
+      { $lookup: { from: 'ratings', localField: '_id', foreignField: 'shipId', as: 'ratings' } },
+      { $addFields: { avgRating: { $ifNull: [{ $avg: '$ratings.rating' }, 0] } } },
+      { $project: { ratings: 0 } }
     ]);
+    if (!Array.isArray(shipsWithAvgRating)) {
+      console.error("Hasil agregasi bukan array!", shipsWithAvgRating);
+      return res.status(200).json([]);
+    }
     res.status(200).json(shipsWithAvgRating);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// === ROUTE BARU: GET SATU KAPAL BERDASARKAN ID BESERTA SEMUA RATINGNYA ===
-// Method: GET
-// Endpoint: /api/ships/ID_KAPALNYA
+// ROUTE 2: GET SATU KAPAL BERDASARKAN ID BESERTA SEMUA RATINGNYA
 router.get('/:id', async (req, res) => {
   try {
-    // 1. Ambil ID dari parameter URL
     const shipId = req.params.id;
-
-    // 2. Cari kapal berdasarkan ID tersebut
     const ship = await Ship.findById(shipId);
-
-    // Jika kapal tidak ditemukan, kirim error 404
     if (!ship) {
       return res.status(404).json({ error: 'Kapal tidak ditemukan.' });
     }
-
-    // 3. Cari semua rating yang berhubungan dengan kapal ini, urutkan dari terbaru
     const ratings = await Rating.find({ shipId: shipId }).sort({ createdAt: -1 });
-
-    // 4. Kirimkan data gabungan (detail kapal + semua ratingnya)
     res.status(200).json({ ship, ratings });
-
   } catch (error) {
-    // Tangani kemungkinan error ID yang tidak valid
     if (error.kind === 'ObjectId') {
         return res.status(404).json({ error: 'ID Kapal tidak valid.' });
     }
@@ -70,12 +42,9 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// === ROUTE 3: MEMBUAT KAPAL BARU ===
-// Method: POST
-// Endpoint: /api/ships/
+// ROUTE 3: MEMBUAT KAPAL BARU (STRUKTUR BARU)
 router.post('/', async (req, res) => {
   try {
-    // Ambil semua data baru dari body request
     const newShip = await Ship.create({ 
       name: req.body.name,
       photo: req.body.photo,
@@ -95,4 +64,19 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+// --- ROUTE 4: MENGHAPUS SEMUA KAPAL (YANG HILANG) ---
+// Method: DELETE
+// Endpoint: /api/ships/
+router.delete('/', async (req, res) => {
+  try {
+    await Ship.deleteMany({}); // Perintah untuk menghapus semua dokumen di koleksi Ship
+    res.status(200).json({ message: 'Semua data kapal berhasil dihapus.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+// --- AKHIR ROUTE DELETE ---
+
+
 module.exports = router;
