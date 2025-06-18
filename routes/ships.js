@@ -74,28 +74,23 @@ router.get('/:id', async (req, res) => {
 // Method: POST
 // Endpoint: /api/ships/
 router.post('/', async (req, res) => {
-  // Ambil semua data dari body, termasuk portActivities
-  const { 
-    name, 
-    photo, 
-    description, 
-    vessel_finder_url, 
-    ticket_url, 
-    schedule_info,
-    portActivities // <-- Variabel baru
-  } = req.body;
-
   try {
-    const ship = await Ship.create({ 
-      name, 
-      photo, 
-      description, 
-      vessel_finder_url, 
-      ticket_url, 
-      schedule_info,
-      portActivities // <-- Simpan data tabel ke database
+    // Ambil semua data baru dari body request
+    const newShip = await Ship.create({ 
+      name: req.body.name,
+      photo: req.body.photo,
+      description: req.body.description,
+      vessel_finder_url: req.body.vessel_finder_url,
+      ticket_url: req.body.ticket_url,
+      gtLoa: req.body.gtLoa,
+      agen: req.body.agen,
+      labuh: req.body.labuh,
+      rencanaSandar: req.body.rencanaSandar,
+      komoditi: req.body.komoditi,
+      bongkarMuat: req.body.bongkarMuat,
+      asalTujuan: req.body.asalTujuan
     });
-    res.status(201).json(ship);
+    res.status(201).json(newShip);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
