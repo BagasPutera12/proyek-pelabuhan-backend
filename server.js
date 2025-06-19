@@ -1,23 +1,19 @@
-// backend/server.js (VERSI FINAL DENGAN CORS)
+// backend/server.js (VERSI FINAL DENGAN PERBAIKAN CORS)
 
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); // Pastikan cors diimpor
+const cors = require('cors');
 const shipRoutes = require('./routes/ships');
 const ratingRoutes = require('./routes/ratings');
 
 const app = express();
 
-// --- BAGIAN PENTING: KONFIGURASI CORS ---
-const corsOptions = {
-  // Ganti dengan URL Vercel Anda yang sebenarnya!
-  // Pastikan tidak ada slash '/' di akhir.
-  origin: 'https://proyek-pelabuhan-frontend.vercel.app', // GANTI DENGAN URL VERCEL ANDA
-  optionsSuccessStatus: 200 
-};
-app.use(cors(corsOptions));
-// --- AKHIR BAGIAN CORS ---
+// --- BAGIAN PERBAIKAN CORS ---
+// Menggunakan cors() tanpa opsi akan mengizinkan permintaan dari semua origin.
+// Ini adalah cara paling pasti untuk memastikan masalahnya ada di CORS.
+app.use(cors());
+// --- AKHIR PERBAIKAN ---
 
 app.use(express.json());
 
