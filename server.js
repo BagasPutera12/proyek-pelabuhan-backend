@@ -1,4 +1,4 @@
-// backend/server.js (VERSI ANTI-GAGAL)
+// backend/server.js (VERSI BENAR TANPA AUTH GLOBAL)
 
 require('dotenv').config();
 const express = require('express');
@@ -12,15 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- PEMERIKSAAN ENVIRONMENT VARIABLE ---
-const MONGO_URI = process.env.MONGO_URI;
-
-if (!MONGO_URI) {
-  // Jika MONGO_URI tidak ada, cetak error yang jelas dan hentikan aplikasi
-  console.error('FATAL ERROR: MONGO_URI tidak ditemukan di environment variables.');
-  process.exit(1);
-}
-// ------------------------------------
+// Pastikan tidak ada app.use(requireAuth) di sini
 
 app.use('/api/ships', shipRoutes);
 app.use('/api/ratings', ratingRoutes);
@@ -28,8 +20,14 @@ app.use('/api/ratings', ratingRoutes);
 const PORT = process.env.PORT || 5001;
 
 const startServer = async () => {
+  // Cek MONGO_URI
+  const MONGO_URI = process.env.MONGO_URI;
+  if (!MONGO_URI) {
+    console.error('FATAL ERROR: MONGO_URI tidak ditemukan di environment variables.');
+    process.exit(1);
+  }
+
   try {
-    // Gunakan variabel yang sudah kita periksa
     await mongoose.connect(MONGO_URI);
     console.log('✅ Berhasil terhubung ke MongoDB Atlas!');
     app.listen(PORT, () => {
