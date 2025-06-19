@@ -1,5 +1,3 @@
-// backend/server.js (VERSI BENAR TANPA AUTH GLOBAL)
-
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -12,7 +10,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Pastikan tidak ada app.use(requireAuth) di sini
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  console.error('FATAL ERROR: MONGO_URI tidak ditemukan.');
+  process.exit(1);
+}
 
 app.use('/api/ships', shipRoutes);
 app.use('/api/ratings', ratingRoutes);
@@ -20,13 +22,6 @@ app.use('/api/ratings', ratingRoutes);
 const PORT = process.env.PORT || 5001;
 
 const startServer = async () => {
-  // Cek MONGO_URI
-  const MONGO_URI = process.env.MONGO_URI;
-  if (!MONGO_URI) {
-    console.error('FATAL ERROR: MONGO_URI tidak ditemukan di environment variables.');
-    process.exit(1);
-  }
-
   try {
     await mongoose.connect(MONGO_URI);
     console.log('✅ Berhasil terhubung ke MongoDB Atlas!');

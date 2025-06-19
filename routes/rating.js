@@ -1,29 +1,19 @@
-// backend/routes/ratings.js
 const express = require('express');
 const Rating = require('../models/Rating');
-const Ship = require('../models/Ship'); // Kita butuh Ship untuk validasi
+const Ship = require('../models/Ship');
 
 const router = express.Router();
 
-// === ROUTE: MEMBUAT RATING BARU ===
-// Method: POST
-// Endpoint: /api/ratings/
 router.post('/', async (req, res) => {
   const { shipId, rating, comment } = req.body;
-
-  // Validasi sederhana
   if (!shipId || !rating) {
     return res.status(400).json({ error: 'Ship ID dan rating wajib diisi.' });
   }
-
   try {
-    // Cek apakah kapal dengan ID tersebut ada
     const shipExists = await Ship.findById(shipId);
     if (!shipExists) {
       return res.status(404).json({ error: 'Kapal tidak ditemukan.' });
     }
-
-    // Buat rating baru
     const newRating = await Rating.create({ shipId, rating, comment });
     res.status(201).json(newRating);
   } catch (error) {

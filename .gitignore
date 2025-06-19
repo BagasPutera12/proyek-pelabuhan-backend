@@ -1,9 +1,4 @@
 node_modules/
-
-# File environment yang berisi rahasia
 .env
-
-# File-file log
 npm-debug.log*
 *.log
-package-lock.json
