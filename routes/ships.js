@@ -3,6 +3,7 @@
 const express = require('express');
 const Ship = require('../models/Ship');
 const Rating = require('../models/Rating');
+const requireAuth = require('../middleware/auth'); // <-- 1. Impor "satpam" kita
 
 const router = express.Router();
 
@@ -43,7 +44,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // ROUTE 3: MEMBUAT KAPAL BARU (STRUKTUR BARU)
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const newShip = await Ship.create({ 
       name: req.body.name,
@@ -64,7 +65,7 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -90,7 +91,7 @@ router.delete('/:id', async (req, res) => {
 // --- ROUTE 4: MENGHAPUS SEMUA KAPAL (YANG HILANG) ---
 // Method: DELETE
 // Endpoint: /api/ships/
-router.delete('/', async (req, res) => {
+router.delete('/', requireAuth, async (req, res) => {
   try {
     await Ship.deleteMany({}); // Perintah untuk menghapus semua dokumen di koleksi Ship
     res.status(200).json({ message: 'Semua data kapal berhasil dihapus.' });
