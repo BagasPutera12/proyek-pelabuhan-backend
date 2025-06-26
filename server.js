@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const shipRoutes = require('./routes/ships');
 const ratingRoutes = require('./routes/ratings');
-
+const portSurveyRoutes = require('./routes/portSurveys');
 const app = express();
 
 app.use(cors());
@@ -18,7 +18,7 @@ if (!MONGO_URI) {
 
 app.use('/api/ships', shipRoutes);
 app.use('/api/ratings', ratingRoutes);
-
+app.use('/api/port-surveys', portSurveyRoutes);
 const PORT = process.env.PORT || 5001;
 
 const startServer = async () => {
