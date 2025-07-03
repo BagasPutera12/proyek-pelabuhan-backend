@@ -5,6 +5,8 @@ const cors = require('cors');
 const shipRoutes = require('./routes/ships');
 const ratingRoutes = require('./routes/ratings');
 const portSurveyRoutes = require('./routes/portSurveys');
+const aspectRatingRoutes = require('./routes/aspectRatings'); 
+
 const app = express();
 
 app.use(cors());
@@ -18,7 +20,7 @@ if (!MONGO_URI) {
 
 app.use('/api/ships', shipRoutes);
 app.use('/api/ratings', ratingRoutes);
-app.use('/api/port-surveys', portSurveyRoutes);
+app.use('/api/aspect-ratings', aspectRatingRoutes);
 const PORT = process.env.PORT || 5001;
 
 const startServer = async () => {
