@@ -1,28 +1,29 @@
-// backend/models/AspectRating.js
+// backend/models/AspectRating.js (DENGAN LINK KE SUBMISI)
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const AspectRatingSchema = new Schema({
-  aspect: { // contoh: "Keamanan & Keselamatan"
+  // Field baru untuk menghubungkan ke "amplop" survei
+  submissionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'SurveySubmission',
+    required: true
+  },
+  aspect: {
     type: String,
     required: true,
   },
-  indicator: { // contoh: "Saya merasa aman berkat kehadiran fasilitas informasi terkait keamanan."
+  indicator: {
     type: String,
     required: true,
   },
-  rating: { // nilai 1-5
+  rating: {
     type: Number,
     required: true,
     min: 1,
     max: 5,
   },
-  suggestion: { // Saran opsional dari pengguna
-    type: String,
-    required: false,
-    trim: true
-  }
-}, { timestamps: true }); // timestamps akan mencatat kapan rating diberikan
+}, { timestamps: true });
 
 module.exports = mongoose.model('AspectRating', AspectRatingSchema);

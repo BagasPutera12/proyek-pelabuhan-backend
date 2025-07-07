@@ -6,6 +6,7 @@ const shipRoutes = require('./routes/ships');
 const ratingRoutes = require('./routes/ratings');
 const portSurveyRoutes = require('./routes/portSurveys');
 const aspectRatingRoutes = require('./routes/aspectRatings'); 
+const fullSurveyRoutes = require('./routes/fullSurvey');
 
 const app = express();
 
@@ -21,6 +22,7 @@ if (!MONGO_URI) {
 app.use('/api/ships', shipRoutes);
 app.use('/api/ratings', ratingRoutes);
 app.use('/api/aspect-ratings', aspectRatingRoutes);
+app.use('/api/full-surveys', fullSurveyRoutes);
 const PORT = process.env.PORT || 5001;
 
 const startServer = async () => {
